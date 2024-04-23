@@ -1,0 +1,10 @@
+*.so
+**.o
+*.o
+*.hex
+
+**/OBJ/*
+/c8t6-demo/OBJ
+/rct6-first/OBJ
+/c8t6-demo/OBJ/*
+/rct6-first/OBJ/*
