@@ -1,0 +1,9 @@
+{
+    "files.encoding": "gbk",
+    "files.associations": {
+        "sys.h": "c",
+        "includes.h": "c",
+        "os_cpu.h": "c",
+        "ucos_ii.h": "c"
+    }
+}
