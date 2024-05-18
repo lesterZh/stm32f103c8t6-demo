@@ -25,8 +25,14 @@ static void init_Key()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;	  // PA0
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;	  // PA0 WK_KEY接VCC
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; // PA0 设置成输入，默认下拉
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    // KEY1 PA1 接GND
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;	 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; // PA0 设置成输入，上拉，按下为0
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 

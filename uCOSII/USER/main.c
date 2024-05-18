@@ -60,7 +60,10 @@ void *msgGrp[16];
 OS_TMR   * os_soft_timer;	//软件定时器1
 OS_TMR   * delay_key_checker;	//按键消抖延时回调
 void KeyDelayCheckCallback(OS_TMR *ptmr, void *p_arg) {
-    printf("KeyDelayCheckCallback\r\n");
+    // printf("KeyDelayCheckCallback\r\n");
+    if (WK_UP_KEY == 1) {
+        printf("WK Key Down\r\n");
+    }
 }
 
 void TimerCallback(OS_TMR *ptmr, void *p_arg) {
@@ -199,27 +202,27 @@ void oled_task(void *pdata) {
 
 void key_task(void *pdata) {
     u8 err;
-    u8 wk_key_down_cnt = 0, wk_key_up_cnt = 0;
+    u8 key1_down_cnt = 0, key1_up_cnt = 0;
     u8 oled_show[20];
     u8 mail_cnt = 0;
     u8 mq_cnt = 0, mq_id = 0;
     while (1) {
         delay_ms(10);
-        if (WK_UP_KEY == 1) {
-            wk_key_down_cnt++;
-            if (wk_key_down_cnt >= 5) wk_key_down_cnt = 5;
-            wk_key_up_cnt = 0;
+        if (KEY1 == 0) {
+            key1_down_cnt++;
+            if (key1_down_cnt >= 5) key1_down_cnt = 5;
+            key1_up_cnt = 0;
         } else {
-            wk_key_up_cnt++;
-            if (wk_key_up_cnt >= 5) wk_key_up_cnt = 5;
-            wk_key_down_cnt = 0;
+            key1_up_cnt++;
+            if (key1_up_cnt >= 5) key1_up_cnt = 5;
+            key1_down_cnt = 0;
         }
 
-        if (wk_key_down_cnt == 2) {
-            printf("WK Key Down\r\n");
-            
+        if (key1_down_cnt == 2) {
+            printf("Key1 Down\r\n");
+
             OLED_ClearLine(6);
-            OLED_ShowString(6, 6, "wk key down");
+            OLED_ShowString(6, 6, "key1 down");
 
             //发送信号量
             OSSemPost(key_seg); //计数值 +1
@@ -235,10 +238,10 @@ void key_task(void *pdata) {
                 OSQPost(mq_signal, "mq msg");
             }
 
-        } else if (wk_key_up_cnt == 2) {
+        } else if (key1_up_cnt == 2) {
             OLED_ClearLine(6);
-            OLED_ShowString(6, 6, "wk key up");
-            printf("WK Key up\r\n");
+            OLED_ShowString(6, 6, "key1 up");
+            printf("Key1 up\r\n");
         }
 
         // sprintf(oled_show, "seg:%d", key_seg->OSEventCnt);

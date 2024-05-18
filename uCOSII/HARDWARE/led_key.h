@@ -10,6 +10,8 @@
 
 // 按下为高电平
 #define WK_UP_KEY GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)
+#define KEY1 PAin(1)
+
 #define WKUP_PRES 2
 #define LED PBout(4)
 
