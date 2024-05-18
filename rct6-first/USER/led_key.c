@@ -1,6 +1,7 @@
 
 #include "led_key.h"
 
+u8 WK_UP_INT_STATUS = 0;
 
 //LED PB4, WK_UP KEY:PA0, KEY1:PA1; I2C2接EEPROM
 void LED_Init(void)

@@ -3,13 +3,13 @@
         {
             "name": "F103",
             "includePath": [
-                "c:\\Users\\haita\\Desktop\\stm32\\stm32f103c8t6-demo\\rct6-first\\STM32F10x_FWLib\\inc",
-                "c:\\Users\\haita\\Desktop\\stm32\\stm32f103c8t6-demo\\rct6-first\\SYSTEM",
-                "c:\\Users\\haita\\Desktop\\stm32\\stm32f103c8t6-demo\\rct6-first\\BSP",
-                "c:\\Users\\haita\\Desktop\\stm32\\stm32f103c8t6-demo\\rct6-first\\USER",
+                "c:\\Users\\haita\\Desktop\\stm32\\stm32F103-demo\\rct6-first\\STM32F10x_FWLib\\inc",
+                "c:\\Users\\haita\\Desktop\\stm32\\stm32F103-demo\\rct6-first\\SYSTEM",
+                "c:\\Users\\haita\\Desktop\\stm32\\stm32F103-demo\\rct6-first\\BSP",
+                "c:\\Users\\haita\\Desktop\\stm32\\stm32F103-demo\\rct6-first\\USER",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include",
                 "C:\\Keil_v5\\ARM\\ARMCC\\include\\rw",
-                "c:\\Users\\haita\\Desktop\\stm32\\stm32f103c8t6-demo\\rct6-first\\STM32F10x_FWLib\\src"
+                "c:\\Users\\haita\\Desktop\\stm32\\stm32F103-demo\\rct6-first\\STM32F10x_FWLib\\src"
             ],
             "defines": [
                 "STM32F10X_HD",

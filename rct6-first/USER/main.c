@@ -7,7 +7,7 @@
 #include "led_key.h"
 #include "24C08.h"
 
-int cnt = 0;
+int t3_cnt = 0;
 
 uint8_t Sendbuff[17]={10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26};//多字节写缓冲
 uint8_t Recvbuff[18];//多字节读缓冲
@@ -21,18 +21,20 @@ void TIM3_IRQHandler(void) // TIM3 中断
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET) // 检查 TIM3 更新中断发生与否
     {
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update); // 清除 TIM3 更新中断标志
-        // printf("cnt:%d\r\n", cnt++);
-        flip_LED();
+        // printf("t3_cnt:%d\r\n", t3_cnt++);
+        t3_cnt++;
+        if (t3_cnt % 100 == 0) flip_LED();
     }
 }
 
 void EXTI0_IRQHandler(void)
 {
-	delay_ms(10); // 消抖
+	delay_ms(10); // 消抖，正常不应该在中断里面延时
 	if (WK_UP == 1)
 	{
 		printf("WK-PA0,int\r\n");
-        oled_cnt = 0;
+        OLED_ClearLine(6);
+        OLED_ShowString(6, 6, "WK Key Press");
 	}
 	EXTI_ClearITPendingBit(EXTI_Line0); // 清除 EXTI0 线路挂起位
 }
@@ -46,7 +48,7 @@ int main(void)
     delay_init(); // 延时函数初始化,通过Systick中断实现1ms延时功能
     LED_Init();   // 初始化GPIO,PB4配置成推挽输出
     uart_init(9600);
-    TIM3_Int_Init(4999, 7199);//10K, 500ms
+    TIM3_Int_Init(99, 7199);//10K, 10ms
 
     gpio_A0_interrupt_init();
 	IIC_Init();//IIC初始化，配置速度为100K,I2C2

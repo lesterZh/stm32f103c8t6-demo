@@ -11,6 +11,8 @@
 #define WK_UP GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0)
 #define WKUP_PRES 2
 
+extern u8 WK_UP_INT_STATUS;
+
 void LED_Init(void);
 void gpio_A0_interrupt_init(void);
 void flip_LED(void);
