@@ -1,29 +1,29 @@
 #include "timer.h"
 
-// é€šç”¨å®šæ—¶å™¨ 3 ä¸­æ–­åˆå§‹åŒ–
-// è¿™é‡Œæ—¶é’Ÿé€‰æ‹©ä¸º APB1 çš„ 2 å€ï¼Œè€Œ APB1 ä¸º 36M
-// arrï¼šè‡ªåŠ¨é‡è£…å€¼ã€‚
-// pscï¼šæ—¶é’Ÿé¢„åˆ†é¢‘æ•°
-// è¿™é‡Œä½¿ç”¨çš„æ˜¯å®šæ—¶å™¨ 3!
+// Í¨ÓÃ¶¨Ê±Æ÷ 3 ÖĞ¶Ï³õÊ¼»¯
+// ÕâÀïÊ±ÖÓÑ¡ÔñÎª APB1 µÄ 2 ±¶£¬¶ø APB1 Îª 36M
+// arr£º×Ô¶¯ÖØ×°Öµ¡£
+// psc£ºÊ±ÖÓÔ¤·ÖÆµÊı; 7199¶ÔÓ¦10K 0.1ms; arr=100-1;¶ÔÓ¦10ms
+// ÕâÀïÊ¹ÓÃµÄÊÇ¶¨Ê±Æ÷ 3!
 void TIM3_Int_Init(u16 arr, u16 psc)
 {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStr;
     NVIC_InitTypeDef NVIC_InitStructure;
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); // â‘ æ—¶é’Ÿ TIM3 ä½¿èƒ½
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); // ¢ÙÊ±ÖÓ TIM3 Ê¹ÄÜ
 
-    // å®šæ—¶å™¨ TIM3 åˆå§‹åŒ–
-    TIM_TimeBaseInitStr.TIM_Period = arr;                     // è®¾ç½®è‡ªåŠ¨é‡è£…è½½å¯„å­˜å™¨å‘¨æœŸçš„å€¼
-    TIM_TimeBaseInitStr.TIM_Prescaler = psc;                  // è®¾ç½®æ—¶é’Ÿé¢‘ç‡é™¤æ•°çš„é¢„åˆ†é¢‘å€¼
-    TIM_TimeBaseInitStr.TIM_ClockDivision = TIM_CKD_DIV1;     // è®¾ç½®æ—¶é’Ÿåˆ†å‰²
-    TIM_TimeBaseInitStr.TIM_CounterMode = TIM_CounterMode_Up; // TIM å‘ä¸Šè®¡æ•°
-    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStr);             // â‘¡åˆå§‹åŒ– TIM3
-    TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);                  // â‘¢å…è®¸æ›´æ–°ä¸­æ–­
-    // ä¸­æ–­ä¼˜å…ˆçº§ NVIC è®¾ç½®
-    NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;           // TIM3 ä¸­æ–­
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; // å…ˆå ä¼˜å…ˆçº§ 0 çº§
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        // ä»ä¼˜å…ˆçº§ 3 çº§
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // IRQ é€šé“è¢«ä½¿èƒ½
-    NVIC_Init(&NVIC_InitStructure);                           // â‘£åˆå§‹åŒ– NVIC å¯„å­˜å™¨
-    TIM_Cmd(TIM3, ENABLE);                                    // â‘¤ä½¿èƒ½ TIM3
+    // ¶¨Ê±Æ÷ TIM3 ³õÊ¼»¯
+    TIM_TimeBaseInitStr.TIM_Period = arr;                     // ÉèÖÃ×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷ÖÜÆÚµÄÖµ
+    TIM_TimeBaseInitStr.TIM_Prescaler = psc;                  // ÉèÖÃÊ±ÖÓÆµÂÊ³ıÊıµÄÔ¤·ÖÆµÖµ
+    TIM_TimeBaseInitStr.TIM_ClockDivision = TIM_CKD_DIV1;     // ÉèÖÃÊ±ÖÓ·Ö¸î
+    TIM_TimeBaseInitStr.TIM_CounterMode = TIM_CounterMode_Up; // TIM ÏòÉÏ¼ÆÊı
+    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStr);             // ¢Ú³õÊ¼»¯ TIM3
+    TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);                  // ¢ÛÔÊĞí¸üĞÂÖĞ¶Ï
+    // ÖĞ¶ÏÓÅÏÈ¼¶ NVIC ÉèÖÃ
+    NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;           // TIM3 ÖĞ¶Ï
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; // ÏÈÕ¼ÓÅÏÈ¼¶ 0 ¼¶
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        // ´ÓÓÅÏÈ¼¶ 3 ¼¶
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // IRQ Í¨µÀ±»Ê¹ÄÜ
+    NVIC_Init(&NVIC_InitStructure);                           // ¢Ü³õÊ¼»¯ NVIC ¼Ä´æÆ÷
+    TIM_Cmd(TIM3, ENABLE);                                    // ¢İÊ¹ÄÜ TIM3
 }
 

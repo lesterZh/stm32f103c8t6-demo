@@ -61,7 +61,7 @@ int fputc(int ch, FILE *f)
 // 串口1中断服务程序
 // 注意,读取USARTx->SR能避免莫名其妙的错误
 u8 USART_RX_BUF[USART_REC_LEN]; // 接收缓冲,最大USART_REC_LEN个字节.
-// 接收状态
+// 接收状态， //串口收到结尾标识符:0D 0A USART_RX_STA = 2
 u8 USART_RX_STA = 0; // 接收状态标记
 u8 USART_RX_LEN = 0;
 
@@ -75,6 +75,7 @@ void uart_init(u32 bound)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE); // 使能USART1，GPIOA时钟
 
 	// USART1_TX   GPIOA.9
+    // 遇到单片机串口发送异常，上位机收不到数据，重启电脑问题解决。
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; // PA.9
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; // 复用推挽输出
