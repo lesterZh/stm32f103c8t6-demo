@@ -155,11 +155,11 @@ void led_task(void *pdata)
         LED = 0;
         delay_ms(500);
 
-        OSSemPend(key_seg, 0, &err);
-        printf("seg ret:%d\r\n", err);
+        // OSSemPend(key_seg, 0, &err);
+        // printf("seg ret:%d\r\n", err);
 
         LED = 1;
-        delay_ms(500);
+        delay_ms(1500);
     };
 }
 

@@ -61,9 +61,13 @@ int fputc(int ch, FILE *f)
 // 串口1中断服务程序
 // 注意,读取USARTx->SR能避免莫名其妙的错误
 u8 USART_RX_BUF[USART_REC_LEN]; // 接收缓冲,最大USART_REC_LEN个字节.
-// 接收状态， //串口收到结尾标识符:0D 0A USART_RX_STA = 2
+
+// 接收状态， //串口收到结尾标识符:0D 0A， USART_RX_STA = 2，
+// 如果收到完整一帧数据 = 3；如果收到最后一个字符后3ms没有下一个字符，认为一帧接收完成；
 u8 USART_RX_STA = 0; // 接收状态标记
+
 u8 USART_RX_LEN = 0;
+#endif
 
 void uart_init(u32 bound)
 {
@@ -131,46 +135,63 @@ void sendString(char *str)
 	}
 }
 
+extern int sys_tick_1ms;
+extern int uart_last_rec_sys_tick;
+
 void USART1_IRQHandler(void) // 串口1中断服务程序
 {
 	u8 Res;
 #if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
 	OSIntEnter();
 #endif
+
+    // 通过读取 DR 寄存器（隐式清除 RXNE 标志）或显式调用 USART_ClearITPendingBit(USART1, USART_IT_RXNE)
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET) // 接收中断(接收到的数据必须是0x0d 0x0a结尾)
 	{
 		Res = USART_ReceiveData(USART1); // 读取接收到的数据
+        USART_RX_BUF[USART_RX_LEN] = Res;
+        USART_RX_LEN++;
+        if (USART_RX_LEN > 2) {
+            if (USART_RX_BUF[USART_RX_LEN-1] == 0x0A && USART_RX_BUF[USART_RX_LEN-2] == 0x0D) {
+                USART_RX_STA = 2;
+            }
+        }
+        
+        uart_last_rec_sys_tick = sys_tick_1ms;
+
+
 		// USART_SendData(USART1, Res);
         
-		if (USART_RX_STA == 0)
-		{
-			if (Res == 0x0d)
-			{
-				USART_RX_STA = 1;
-			}
-			else
-			{
-				// buf不保存od oa的结束字节
-				USART_RX_BUF[USART_RX_LEN++] = Res;
-			}
-		}
-		else if (USART_RX_STA == 1)
-		{
-			if (Res == 0x0a)
-			{
-				USART_RX_STA = 2;
-				USART_RX_BUF[USART_RX_LEN] = 0;
-			}
-			else
-			{
-				// 出现错误
-				USART_RX_LEN = 0;
-				USART_RX_STA = 0;
-			}
-		}
+		// if (USART_RX_STA == 0)
+		// {
+		// 	if (Res == 0x0d)
+		// 	{
+		// 		USART_RX_STA = 1;
+		// 	}
+		// 	else
+		// 	{
+		// 		// buf不保存od oa的结束字节
+		// 		USART_RX_BUF[USART_RX_LEN++] = Res;
+		// 	}
+		// }
+		// else if (USART_RX_STA == 1)
+		// {
+		// 	if (Res == 0x0a)
+		// 	{
+		// 		USART_RX_STA = 2;
+		// 		USART_RX_BUF[USART_RX_LEN] = 0;
+		// 	}
+		// 	else
+		// 	{
+		// 		// 出现错误
+		// 		USART_RX_LEN = 0;
+		// 		USART_RX_STA = 0;
+		// 	}
+		// }
 	}
+
+
 #if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
 	OSIntExit();
 #endif
 }
-#endif
