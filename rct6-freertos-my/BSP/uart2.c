@@ -1,8 +1,8 @@
 
 #include "uart2.h"
 
-void USART2_DMA_Config();
-void USART2_DMA_Rec_Config();
+void USART2_DMA_Config(void);
+void USART2_DMA_Rec_Config(void);
 
 void uart2_init(int bound)
 {
@@ -52,7 +52,7 @@ void uart2_init(int bound)
 
 volatile uint8_t USART2_DMA_TX_Complete = 1;
 
-void USART2_DMA_Config()
+void USART2_DMA_Config(void)
 {
     DMA_InitTypeDef DMA_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -120,7 +120,7 @@ void DMA1_Channel7_IRQHandler(void)
     }
 }
 
-void test_uart2_dma_send() {
+void test_uart2_dma_send(void) {
     static int cnt = 0;
     static uint8_t tx_buf[40];
     sprintf(tx_buf, "Hello STM32 USART2 DMA! -- %d\r\n", cnt++);
@@ -134,7 +134,7 @@ volatile uint8_t USART2_RX_Buffer[USART2_RX_BUFFER_SIZE];
 volatile uint16_t USART2_RX_Count = 0;
 volatile uint8_t USART2_RX_Flag = 0;
 
-void USART2_DMA_Rec_Config() {
+void USART2_DMA_Rec_Config(void) {
     DMA_InitTypeDef DMA_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
@@ -180,7 +180,7 @@ void USART2_DMA_Rec_Config() {
 // 保证这个buf可以装下完整一帧数据, 配合uart idle检测到结束事件
 u8 dma_full_buf[1024];
 int dma_full_buf_id = 0;
-void processFullBuffer() {
+void processFullBuffer(void) {
     // 复制数据
     for(int i=0; i < USART2_RX_BUFFER_SIZE; i++)
     {
@@ -202,7 +202,7 @@ void DMA1_Channel6_IRQHandler(void)
         // USART2_RX_Flag = 1;
         // printf("half\r\n");
         // 在这里可以处理前半部分数据
-        // ProcessHalfBuffer();
+        // ProcessHalfBuffer(void);
     }
     
     // 传输完成中断
@@ -258,7 +258,7 @@ uint16_t USART2_DMA_Receive(uint8_t *buffer)
 uint8_t receive_buffer[256];
 uint16_t receive_len;
 
-void test_dma_rec() {
+void test_dma_rec(void) {
     // 检查是否接收到数据
     receive_len = USART2_DMA_Receive(receive_buffer);
     if(receive_len > 0)
@@ -309,34 +309,34 @@ u8 USART2_RX_STA = 0; // 接收状态标记
 
 int USART2_RX_LEN = 0;
 
-void resetUart2RecBuf();
-u8 * getUart2RecBuf();
-void set_uart2_rec_tick();
-int isUart2RecFrame();
-int getUart2RecLen();
+void resetUart2RecBuf(void);
+u8 * getUart2RecBuf(void);
+void set_uart2_rec_tick(void);
+int isUart2RecFrame(void);
+int getUart2RecLen(void);
 
-void resetUart2RecBuf() {
+void resetUart2RecBuf(void) {
     USART2_RX_LEN = 0;
     USART2_RX_STA = 0;
     USART2_RX_BUF[0] = 0;
 }
 
-u8 * getUart2RecBuf() {
+u8 * getUart2RecBuf(void) {
     return USART2_RX_BUF;
 }
 
-int getUart2RecLen() {
+int getUart2RecLen(void) {
     return USART2_RX_LEN;
 }
 
 int uart2_last_rec_sys_tick = 0;
 extern int sys_tick_1ms;
 
-void set_uart2_rec_tick() {
+void set_uart2_rec_tick(void) {
     uart2_last_rec_sys_tick = sys_tick_1ms;
 }
 
-int isUart2RecFrame() {
+int isUart2RecFrame(void) {
     int dur = sys_tick_1ms - uart2_last_rec_sys_tick;
     return USART2_RX_LEN > 0 && dur >= 3;
 }

@@ -39,11 +39,11 @@ void sendString(char *str);
 void sendChars(char chs[], int len);
 void sendChar(char ch);
 
-void resetUart1RecBuf();
-u8 * getUart1RecBuf();
-int getUart1RecLen();
-void set_uart1_rec_tick();
-int isUart1RecFrame();
+void resetUart1RecBuf(void);
+u8 * getUart1RecBuf(void);
+int getUart1RecLen(void);
+void set_uart1_rec_tick(void);
+int isUart1RecFrame(void);
 
 #endif
 

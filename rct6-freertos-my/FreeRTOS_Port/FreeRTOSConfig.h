@@ -143,6 +143,8 @@ NVIC value of 255. */
 #define configCHECK_FOR_STACK_OVERFLOW 1
 #define configGENERATE_RUN_TIME_STATS 0 //启用运行时间统计功能
 #define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+
 #define configUSE_TIMERS 1 //启用软件定时器
 #define configTIMER_TASK_PRIORITY (configMAX_PRIORITIES-1) //软件定时器优先级
 #define configTIMER_QUEUE_LENGTH 10 //软件定时器队列长度

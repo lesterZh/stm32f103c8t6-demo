@@ -44,3 +44,5 @@ void queryDiwenOneWord(u16 addr) {
 
     sendChars(cmd, 7);
 }
+
+

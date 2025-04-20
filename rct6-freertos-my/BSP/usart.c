@@ -69,32 +69,32 @@ u8 USART_RX_STA = 0; // 接收状态标记
 
 int USART_RX_LEN = 0;
 
-void resetUart1RecBuf();
-u8 * getUart1RecBuf();
-void set_uart1_rec_tick();
-int isUart1RecFrame();
+void resetUart1RecBuf(void);
+u8 * getUart1RecBuf(void);
+void set_uart1_rec_tick(void);
+int isUart1RecFrame(void);
 
-void resetUart1RecBuf() {
+void resetUart1RecBuf(void) {
     USART_RX_LEN = 0;
     USART_RX_STA = 0;
     USART_RX_BUF[0] = 0;
 }
 
-u8 * getUart1RecBuf() {
+u8 * getUart1RecBuf(void) {
     return USART_RX_BUF;
 }
 
-int getUart1RecLen() {
+int getUart1RecLen(void) {
     return USART_RX_LEN;
 }
 
 int uart1_last_rec_sys_tick = 0;
 extern int sys_tick_1ms;
-void set_uart1_rec_tick() {
+void set_uart1_rec_tick(void) {
     uart1_last_rec_sys_tick = sys_tick_1ms;
 }
 
-int isUart1RecFrame() {
+int isUart1RecFrame(void) {
     int dur = sys_tick_1ms - uart1_last_rec_sys_tick;
     return USART_RX_LEN > 0 && dur >= 3;
 }
@@ -167,7 +167,7 @@ void sendString(char *str)
 	}
 }
 
-void set_uart1_rec_tick();
+void set_uart1_rec_tick(void);
 
 void USART1_IRQHandler(void) // 串口1中断服务程序
 {

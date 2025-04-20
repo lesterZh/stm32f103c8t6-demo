@@ -1,13 +1,6 @@
 
 
-#include "stm32f10x.h" // Device header
-#include "FreeRTOS.h"
-#include "task.h"
-#include "led_key.h"
-#include "usart.h"
-#include "oled.h"
-#include "diwen.h"
-#include "uart2.h"
+#include "freertos_program.h"
 
 static TaskHandle_t startTaskHandler;
 static TaskHandle_t myTaskHandler_1;
@@ -22,6 +15,9 @@ void myTask_2(void *arg);
 void uart1_rec_task(void *arg);
 void uart2_rec_task(void *arg);
 void lcd_show_task(void *arg);
+
+void test_queue_init(void);
+void createTimer(void);
 
 void freertos_start_tasks(void)
 {
@@ -38,6 +34,10 @@ void task_begin(void *arg)
     xTaskCreate(uart2_rec_task, "uart2_rec_task", 128, NULL, 1, &uart2_rec_task_handler);
     xTaskCreate(lcd_show_task, "lcd_show_task", 128, NULL, 2, &lcd_show_task_handler);
     vTaskDelete(NULL);
+
+    createTimer();
+    test_queue_init();
+
     taskEXIT_CRITICAL();
 }
 
@@ -52,10 +52,9 @@ void myTask_1(void *arg)
 
 void myTask_2(void *arg)
 {
-    int cnt = 0;
     while (1)
     {
-        // flip_LED();
+        // flip_LED(void);
         vTaskDelay(1000);
         // printf("free rtos:%d\r\n", cnt++);
         // uart2SendString("hi, uart2\r\n");
@@ -81,7 +80,7 @@ void uart1_rec_task(void *arg) {
     {
         vTaskDelay(10);
         if (isUart1RecFrame()) {
-            s16 addr = 0, val = 0;
+            u16 addr = 0, val = 0;
             u8 *buf = getUart1RecBuf();
             int len = getUart1RecLen();
             printf("rec frame:%s\r\n", buf);
@@ -116,9 +115,76 @@ void lcd_show_task(void *arg) {
     u8 oled_show[20];
 
     while (1) {
-        sprintf(oled_show, "cnt:%d", oled_cnt++);
+        sprintf((char *)oled_show, "cnt:%d", oled_cnt++);
         OLED_ClearLine(4);
         OLED_ShowString(6, 4, oled_show);
         vTaskDelay(1000);
     }
 }
+
+typedef struct {
+    uint8_t sensor_id;
+    float value;
+} SensorData;
+
+QueueHandle_t sensorQueue;
+
+void vSenderTask(void *pvParameters)
+{
+    SensorData data = { .sensor_id = 1, .value = 36.5 };
+
+    while (1)
+    {
+        data.sensor_id++;
+        xQueueSend(sensorQueue, &data, portMAX_DELAY);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+void vReceiverTask(void *pvParameters)
+{
+    SensorData rxData;
+
+    while (1)
+    {
+        if (xQueueReceive(sensorQueue, &rxData, portMAX_DELAY) == pdPASS)
+        {
+            printf("Sensor %d: %.2f\r\n", rxData.sensor_id, rxData.value);
+        }
+    }
+}
+
+void test_queue_init(void) {
+    sensorQueue = xQueueCreate(10, sizeof(SensorData));
+    if (sensorQueue == NULL) {
+        // 队列创建失败
+        while (1);
+    }
+
+    xTaskCreate(vSenderTask, "Sender", 128, NULL, 1, NULL);
+    xTaskCreate(vReceiverTask, "Receiver", 128, NULL, 1, NULL);
+}
+
+
+void vTimerCallback(void * xTimer)
+{
+    // 超时后执行的函数
+    printf("Timer expired afer 1000 ms! \r\n");
+}
+
+void createTimer(void)
+{
+    void * xTimerHandle = xTimerCreate(
+        "MyTimer",                 // 名称
+        pdMS_TO_TICKS(1000),      // 周期（tick）
+        pdFALSE,                   // 是否自动重载, false一次性任务
+        NULL,                     // timer ID（可用作上下文）
+        vTimerCallback            // 回调函数
+    );
+
+    if (xTimerHandle != NULL)
+    {
+        xTimerStart(xTimerHandle, 0); // 启动定时器
+    }
+}
+

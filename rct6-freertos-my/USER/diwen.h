@@ -10,3 +10,4 @@ void setDiwenOneWord(u16 addr, u16 val);
 void queryDiwenOneWord(u16 addr) ;
 
 #endif
+

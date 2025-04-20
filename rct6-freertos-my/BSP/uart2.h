@@ -9,13 +9,14 @@ void uart2SendChars(char chs[], int len);
 void uart2SendString(char *str);
 
 
-void resetUart2RecBuf();
-u8 * getUart2RecBuf();
-void set_uart2_rec_tick();
-int isUart2RecFrame();
-int getUart2RecLen();
+void resetUart2RecBuf(void);
+u8 * getUart2RecBuf(void);
+void set_uart2_rec_tick(void);
+int isUart2RecFrame(void);
+int getUart2RecLen(void);
 
-void test_uart2_dma_send();
-void test_dma_rec();
+void test_uart2_dma_send(void);
+void test_dma_rec(void);
 
 #endif
+
