@@ -1,6 +1,7 @@
 
 
 #include "freertos_program.h"
+#include <semphr.h>
 
 static TaskHandle_t startTaskHandler;
 static TaskHandle_t myTaskHandler_1;
@@ -18,6 +19,8 @@ void lcd_show_task(void *arg);
 
 void test_queue_init(void);
 void createTimer(void);
+int vMutexTaskInit(void);
+int vNotifyTestInit(void);
 
 void freertos_start_tasks(void)
 {
@@ -36,7 +39,9 @@ void task_begin(void *arg)
     vTaskDelete(NULL);
 
     createTimer();
-    test_queue_init();
+    // test_queue_init();
+    // vMutexTaskInit();
+    vNotifyTestInit();
 
     taskEXIT_CRITICAL();
 }
@@ -187,4 +192,77 @@ void createTimer(void)
         xTimerStart(xTimerHandle, 0); // 启动定时器
     }
 }
+
+SemaphoreHandle_t xMutex;
+void vMutexTask1(void *pvParameters)
+{
+    for (;;)
+    {
+        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE)
+        {
+            printf("Task 1 is running\r\n");
+            vTaskDelay(pdMS_TO_TICKS(3000)); // 模拟处理临界区
+            xSemaphoreGive(xMutex);
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+void vMutexTask2(void *pvParameters)
+{
+    for (;;)
+    {
+        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE)
+        {
+            printf("Task 2 is running\r\n");
+            // vTaskDelay(pdMS_TO_TICKS(500)); // 模拟处理临界区
+            xSemaphoreGive(xMutex);
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
+        // task1 一直持有mutex, 导致task2和task1频率一致
+    }
+}
+
+int vMutexTaskInit(void)
+{
+    // STM32 的外设初始化略过...
+
+    xMutex = xSemaphoreCreateMutex();
+
+    if (xMutex != NULL)
+    {
+        xTaskCreate(vMutexTask1, "vMutexTask1", 128, NULL, 2, NULL);
+        xTaskCreate(vMutexTask2, "vMutexTask2", 128, NULL, 2, NULL);
+    }
+
+}
+
+TaskHandle_t notifyWaitTaskHandle;
+
+void notifyWaitTask(void *pvParameters)
+{
+    for (;;)
+    {
+        // 等待通知，和notifySendTask运行频率一致
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        printf("notifyWaitTask is running\r\n");
+    }
+}
+
+void notifySendTask(void *pvParameters)
+{
+    for (;;)
+    {
+        vTaskDelay(pdMS_TO_TICKS(3000));
+        xTaskNotifyGive(notifyWaitTaskHandle);
+    }
+}
+
+int vNotifyTestInit(void)
+{
+    xTaskCreate(notifyWaitTask, "notifyWaitTaskHandle", 128, NULL, 2, &notifyWaitTaskHandle);
+    xTaskCreate(notifySendTask, "notifySendTask", 128, NULL, 2, NULL);
+}
+
+
 
