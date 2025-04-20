@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.sqlbook": "sql",
+        "*.ndjson": "jsonl",
+        "*.dbclient-js": "javascript",
+        "led_key.h": "c",
+        "usart.h": "c"
+    },
+    "files.encoding": "gbk",
+    "editor.unicodeHighlight.ambiguousCharacters": false,
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "editor.quickSuggestions": {
+        "other": false,
+        "comments": false,
+        "strings": false
+    }
+}
