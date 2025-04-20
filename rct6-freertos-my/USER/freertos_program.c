@@ -7,18 +7,20 @@
 #include "usart.h"
 #include "oled.h"
 #include "diwen.h"
-
+#include "uart2.h"
 
 static TaskHandle_t startTaskHandler;
 static TaskHandle_t myTaskHandler_1;
 static TaskHandle_t myTaskHandler_2;
 static TaskHandle_t uart1_rec_task_handler;
+static TaskHandle_t uart2_rec_task_handler;
 static TaskHandle_t lcd_show_task_handler;
 
 void task_begin(void *arg);
 void myTask_1(void *arg);
 void myTask_2(void *arg);
 void uart1_rec_task(void *arg);
+void uart2_rec_task(void *arg);
 void lcd_show_task(void *arg);
 
 void freertos_start_tasks(void)
@@ -33,6 +35,7 @@ void task_begin(void *arg)
     xTaskCreate(myTask_1, "myTask_1", 128, NULL, 2, &myTaskHandler_1);
     xTaskCreate(myTask_2, "myTask_2", 128, NULL, 2, &myTaskHandler_2);
     xTaskCreate(uart1_rec_task, "uart1_rec_task", 128, NULL, 2, &uart1_rec_task_handler);
+    xTaskCreate(uart2_rec_task, "uart2_rec_task", 128, NULL, 1, &uart2_rec_task_handler);
     xTaskCreate(lcd_show_task, "lcd_show_task", 128, NULL, 2, &lcd_show_task_handler);
     vTaskDelete(NULL);
     taskEXIT_CRITICAL();
@@ -55,6 +58,8 @@ void myTask_2(void *arg)
         // flip_LED();
         vTaskDelay(1000);
         // printf("free rtos:%d\r\n", cnt++);
+        // uart2SendString("hi, uart2\r\n");
+        test_uart2_dma_send();
     }
 }
 
@@ -87,6 +92,21 @@ void uart1_rec_task(void *arg) {
                 printf("ok\r\n");
             }
             resetUart1RecBuf();
+        }
+    }
+}
+
+void uart2_rec_task(void *arg) {
+    while (1)
+    {
+        vTaskDelay(10);
+        test_dma_rec();
+
+        if (0 && isUart2RecFrame()) {
+            u8 *buf = getUart2RecBuf();
+            int len = getUart2RecLen();
+            printf("uart2 rec frame:%s\r\n", buf);
+            resetUart2RecBuf();
         }
     }
 }

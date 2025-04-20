@@ -1,5 +1,6 @@
 #include "stm32f10x.h"
 #include "usart.h"
+#include "uart2.h"
 #include "delay.h"
 #include "sys.h"
 #include "oled.h"
@@ -53,6 +54,7 @@ int main(void)
     delay_init(); // 延时函数初始化,通过Systick中断实现1ms延时功能
     LED_Init();   // 初始化GPIO,PB4配置成推挽输出
     uart_init(115200);
+    uart2_init(115200);
     TIM3_Int_Init(9, 7199);//10K, 1ms
 
     gpio_A0_interrupt_init();

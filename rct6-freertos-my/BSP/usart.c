@@ -60,7 +60,8 @@ int fputc(int ch, FILE *f)
 #if EN_USART1_RX // 如果使能了接收
 // 串口1中断服务程序
 // 注意,读取USARTx->SR能避免莫名其妙的错误
-u8 USART_RX_BUF[USART_REC_LEN]; // 接收缓冲,最大USART_REC_LEN个字节.
+#define REC_BUF_MAX 64
+u8 USART_RX_BUF[REC_BUF_MAX]; // 接收缓冲,最大USART_REC_LEN个字节.
 
 // 接收状态， //串口收到结尾标识符:0D 0A， USART_RX_STA = 2，
 // 如果收到完整一帧数据 = 3；如果收到最后一个字符后3ms没有下一个字符，认为一帧接收完成；
@@ -186,6 +187,7 @@ void USART1_IRQHandler(void) // 串口1中断服务程序
                 USART_RX_STA = 2;
             }
         }
+        USART_RX_LEN = (USART_RX_LEN+1) % REC_BUF_MAX;
         
         set_uart1_rec_tick();
 
