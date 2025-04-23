@@ -5,7 +5,8 @@
         "*.dbclient-js": "javascript",
         "led_key.h": "c",
         "usart.h": "c",
-        "timers.h": "c"
+        "timers.h": "c",
+        "sys.h": "c"
     },
     "files.encoding": "gbk",
     "editor.unicodeHighlight.ambiguousCharacters": false,

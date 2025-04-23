@@ -1,4 +1,5 @@
 #include "diwen.h"
+#include "fire.h"
 
 void printU16(u16 val) {
     u8 high = (val >> 8) & 0xFF;
@@ -20,8 +21,16 @@ void parseDiwenOneWord(u8* buf, int len, u16 *addr, u16 *val) {
             printf("\r\n");
             (*addr) = addr_;
             (*val) = val_;
-            // setDiwenOneWord(0x1005, 56);
+            
+            // setDiwenOneWord(BTN_ENTER_UI_STATU_REG, 1);
             // queryDiwenOneWord(0x2345);
+
+            if (addr_ == BTN_PRESS_TYPE_REG) {
+                btn_type_reg_val = val_;
+            }
+            if (addr_ == BTN_ENTER_PRESS_REG) {
+                enter_btn_reg_val = val_;
+            }
         }
     }
 }
@@ -34,7 +43,7 @@ void setDiwenOneWord(u16 addr, u16 val) {
     cmd[6] = ((val >> 8) & 0xFF);
     cmd[7] = ((val) & 0xFF);
 
-    sendChars(cmd, 8);
+    uart2SendChars(cmd, 8);
 }
 
 void queryDiwenOneWord(u16 addr) {
@@ -42,7 +51,7 @@ void queryDiwenOneWord(u16 addr) {
     cmd[4] = ((addr >> 8) & 0xFF);
     cmd[5] = ((addr) & 0xFF);
 
-    sendChars(cmd, 7);
+    uart2SendChars(cmd, 7);
 }
 
 

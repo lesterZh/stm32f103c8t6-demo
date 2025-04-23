@@ -3,6 +3,7 @@
 
 #include "stm32f10x.h" // Device header
 #include "usart.h"
+#include "uart2.h"
 #include "sys.h"
 
 void parseDiwenOneWord(u8* buf, int len, u16 *addr, u16 *val);

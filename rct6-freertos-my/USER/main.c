@@ -9,6 +9,7 @@
 #include "24C08.h"
 
 #include "freertos_program.h"
+#include "delay_task.h"
 
 int sys_tick_1ms = 0;
 
@@ -27,6 +28,8 @@ void TIM3_IRQHandler(void) // TIM3 中断
     {
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update); // 清除 TIM3 更新中断标志
         sys_tick_1ms++;
+        sys_handler_delay_task();
+
         // if (t3_cnt % 300 == 0) flip_LED();
     }
 }

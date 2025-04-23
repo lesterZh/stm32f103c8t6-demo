@@ -46,6 +46,8 @@ void task_begin(void *arg)
     // vMutexTaskInit();
     // vNotifyTestInit();
 
+    fire_task_init();
+
     taskEXIT_CRITICAL();
 }
 
@@ -91,7 +93,7 @@ void myTask_2(void *arg)
     {
         // flip_LED(void);
         vTaskDelay(1000);
-        printf("free rtos:%d\r\n", cnt++);
+        // printf("free rtos:%d\r\n", cnt++);
         // uart2SendString("hi, uart2\r\n");
         // test_uart2_dma_send();
     }
@@ -115,31 +117,34 @@ void uart1_rec_task(void *arg) {
     {
         vTaskDelay(10);
         if (isUart1RecFrame()) {
-            u16 addr = 0, val = 0;
+            
             u8 *buf = getUart1RecBuf();
             int len = getUart1RecLen();
             printf("rec frame,size:%d, data:%s\r\n",len,  buf);
             printf("rec frame hex:%s\r\n", bytes_to_hexstr(buf, len));
-            // parseDiwenOneWord(buf, len , &addr, &val);
-
-            if (addr == 0x1234) {
-                printf("ok\r\n");
-            }
+ 
             resetUart1RecBuf();
         }
     }
 }
 
+
 void uart2_rec_task(void *arg) {
+    u16 addr = 0, val = 0;
     while (1)
     {
         vTaskDelay(10);
         // test_dma_rec();
 
-        if (0 && isUart2RecFrame()) {
+        if (isUart2RecFrame()) {
             u8 *buf = getUart2RecBuf();
             int len = getUart2RecLen();
-            printf("uart2 rec frame:%s\r\n", buf);
+
+            // printf("uart2 rec frame:%s\r\n", buf);
+            // printf("rec frame hex:%s\r\n", bytes_to_hexstr(buf, len));
+
+            parseDiwenOneWord(buf, len , &addr, &val);
+
             resetUart2RecBuf();
         }
     }
@@ -215,6 +220,22 @@ void createTimer(void)
         pdFALSE,                   // 是否自动重载, false一次性任务
         NULL,                     // timer ID（可用作上下文）
         vTimerCallback            // 回调函数
+    );
+
+    if (xTimerHandle != NULL)
+    {
+        xTimerStart(xTimerHandle, 0); // 启动定时器
+    }
+}
+
+void createTimerTaskOneShot(char *taskName, void (*cb)(void *), int delay_ms)
+{
+    void * xTimerHandle = xTimerCreate(
+        taskName,                 // 名称
+        pdMS_TO_TICKS(delay_ms),      // 周期（tick）
+        pdFALSE,                   // 是否自动重载, false一次性任务
+        NULL,                     // timer ID（可用作上下文）
+        cb            // 回调函数
     );
 
     if (xTimerHandle != NULL)
