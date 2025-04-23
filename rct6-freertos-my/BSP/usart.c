@@ -181,7 +181,6 @@ void USART1_IRQHandler(void) // 串口1中断服务程序
 	{
 		Res = USART_ReceiveData(USART1); // 读取接收到的数据
         USART_RX_BUF[USART_RX_LEN] = Res;
-        USART_RX_LEN++;
         if (USART_RX_LEN > 2) {
             if (USART_RX_BUF[USART_RX_LEN-1] == 0x0A && USART_RX_BUF[USART_RX_LEN-2] == 0x0D) {
                 USART_RX_STA = 2;

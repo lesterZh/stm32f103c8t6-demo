@@ -11,6 +11,7 @@ static TaskHandle_t uart2_rec_task_handler;
 static TaskHandle_t lcd_show_task_handler;
 
 void task_begin(void *arg);
+void keyPressTask(void *arg);
 void myTask_1(void *arg);
 void myTask_2(void *arg);
 void uart1_rec_task(void *arg);
@@ -31,9 +32,11 @@ void freertos_start_tasks(void)
 void task_begin(void *arg)
 {
     taskENTER_CRITICAL();
+    xTaskCreate(keyPressTask, "keyPressTask", 128, NULL, 5, NULL);
+
     xTaskCreate(myTask_1, "myTask_1", 128, NULL, 2, &myTaskHandler_1);
     xTaskCreate(myTask_2, "myTask_2", 128, NULL, 2, &myTaskHandler_2);
-    xTaskCreate(uart1_rec_task, "uart1_rec_task", 128, NULL, 2, &uart1_rec_task_handler);
+    xTaskCreate(uart1_rec_task, "uart1_rec_task", 128, NULL, 1, &uart1_rec_task_handler);
     xTaskCreate(uart2_rec_task, "uart2_rec_task", 128, NULL, 1, &uart2_rec_task_handler);
     xTaskCreate(lcd_show_task, "lcd_show_task", 128, NULL, 2, &lcd_show_task_handler);
     vTaskDelete(NULL);
@@ -41,9 +44,34 @@ void task_begin(void *arg)
     createTimer();
     // test_queue_init();
     // vMutexTaskInit();
-    vNotifyTestInit();
+    // vNotifyTestInit();
 
     taskEXIT_CRITICAL();
+}
+
+void keyPressTask(void *arg) {
+    int pc6KeyDown = 0;
+    int pc6KeyDownCnt = 0;
+
+    while (1) {
+        vTaskDelay(10);
+        if (isPC6KeyDown()) {
+            pc6KeyDownCnt++;
+        } 
+
+        if (pc6KeyDown == 0 && pc6KeyDownCnt > 15) {
+            printf("key down\r\n");
+            pc6KeyDown = 1;
+        }
+
+        if (!isPC6KeyDown()) {
+            if (pc6KeyDown) {
+                printf("key up\r\n");
+            }
+            pc6KeyDownCnt = 0;
+            pc6KeyDown = 0;
+        }
+    }
 }
 
 void myTask_1(void *arg)
@@ -51,19 +79,21 @@ void myTask_1(void *arg)
     while (1)
     {
         flip_LED();
+        led_flip_mini_bsp();
         vTaskDelay(300);
     }
 }
 
 void myTask_2(void *arg)
 {
+    int cnt = 0;
     while (1)
     {
         // flip_LED(void);
         vTaskDelay(1000);
-        // printf("free rtos:%d\r\n", cnt++);
+        printf("free rtos:%d\r\n", cnt++);
         // uart2SendString("hi, uart2\r\n");
-        test_uart2_dma_send();
+        // test_uart2_dma_send();
     }
 }
 
@@ -88,9 +118,9 @@ void uart1_rec_task(void *arg) {
             u16 addr = 0, val = 0;
             u8 *buf = getUart1RecBuf();
             int len = getUart1RecLen();
-            printf("rec frame:%s\r\n", buf);
+            printf("rec frame,size:%d, data:%s\r\n",len,  buf);
             printf("rec frame hex:%s\r\n", bytes_to_hexstr(buf, len));
-            parseDiwenOneWord(buf, len , &addr, &val);
+            // parseDiwenOneWord(buf, len , &addr, &val);
 
             if (addr == 0x1234) {
                 printf("ok\r\n");
@@ -104,7 +134,7 @@ void uart2_rec_task(void *arg) {
     while (1)
     {
         vTaskDelay(10);
-        test_dma_rec();
+        // test_dma_rec();
 
         if (0 && isUart2RecFrame()) {
             u8 *buf = getUart2RecBuf();

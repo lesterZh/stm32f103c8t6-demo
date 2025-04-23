@@ -60,6 +60,8 @@ int main(void)
     gpio_A0_interrupt_init();
 	IIC_Init();//IIC初始化，配置速度为100K,I2C2
 	
+    led_key_init_mini_bsp();
+
     OLED_Init();  // OLED初始化
 	OLED_Clear(); // 清屏
 
@@ -70,15 +72,15 @@ int main(void)
 	OLED_ShowCHinese(x += 20, 0, 12);
     OLED_ShowString(6, 2, "0.96' OLED TEST"); // 显示字符串,一行字符后下一行 y = y+2
 	
-	AT24C08_WriteOneByte(0,0x33);//0地址写入0x33
-	data= AT24C08_ReadOneByte(0);//从0地址读数据存到EEDATA
+	// AT24C08_WriteOneByte(0,0x33);//0地址写入0x33
+	// data= AT24C08_ReadOneByte(0);//从0地址读数据存到EEDATA
 
-    AT24C08_WriteByte(0,17,Sendbuff); 
-	AT24C08_ReadByte(0,17,Recvbuff); 
+    // AT24C08_WriteByte(0,17,Sendbuff); 
+	// AT24C08_ReadByte(0,17,Recvbuff); 
 
-    printf("read at24c02 one:%x , arr:", data);
-    for (i=0; i<17; i++) printf("%d, ", Recvbuff[i]);
-    printf("\r\n");
+    // printf("read at24c02 one:%x , arr:", data);
+    // for (i=0; i<17; i++) printf("%d, ", Recvbuff[i]);
+    // printf("\r\n");
 
     freertos_start_tasks();
 }

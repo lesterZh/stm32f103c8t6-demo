@@ -468,6 +468,11 @@
               <FileType>1</FileType>
               <FilePath>.\USER\diwen.c</FilePath>
             </File>
+            <File>
+              <FileName>led_key_mini.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\led_key_mini.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

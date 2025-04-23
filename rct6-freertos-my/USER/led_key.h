@@ -17,5 +17,9 @@ void LED_Init(void);
 void gpio_A0_interrupt_init(void);
 void flip_LED(void);
 
+void led_key_init_mini_bsp(void);
+void led_flip_mini_bsp(void);
+int isPC6KeyDown(void);
+
 #endif
 

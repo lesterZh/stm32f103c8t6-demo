@@ -42,10 +42,10 @@ void uart2_init(int bound)
 
     USART_Init(USART2, &USART_InitStructure);
 
-    // USART_ITConfig(USART2, USART_IT_RXNE, ENABLE); // 开启串口接受中断，和DMA接收互斥
+    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE); // 开启串口接受中断，和DMA接收互斥
 
-    USART2_DMA_Config();
-    USART2_DMA_Rec_Config() ;
+    // USART2_DMA_Config();
+    // USART2_DMA_Rec_Config() ;
 
     USART_Cmd(USART2, ENABLE);
 }
