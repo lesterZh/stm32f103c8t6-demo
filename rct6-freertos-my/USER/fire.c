@@ -188,7 +188,7 @@ void disable_fire_btn_touch_exlude(u8 level) {
     printf("disable_fire_btn_touch_exlude %d\r\n", levelInt);
     
     for (i=1; i<=5; i++) {
-        if (1 || i != id) {
+        if (i != id) {
             disable_btn_touch2(i);
             // disable_btn_funs[i]();
             // print_hex_array(ctl_cmd, 8);
@@ -196,7 +196,7 @@ void disable_fire_btn_touch_exlude(u8 level) {
     }
 
     for (i=1; i<=5; i++) {
-        if (1 || i != id) {
+        if (i != id) {
             set_disable_fire_btn_touch_ui(i, 1);
         }
     }
@@ -352,13 +352,15 @@ void set_5_fire_status(u8 level, s16 status) {
         // 发送对应的指令
         start_send_fire_cmd(level);
 
-        disable_fire_btn_touch_exlude(level);
+        // disable_fire_btn_touch_exlude(level);
+        disable_all_fire_btn_touch(level);
     } else if (status == 2) {
         // 成功
         stop_send_fire_cmd();
         start_count_down_seconds();
 
-        disable_fire_btn_touch_exlude(level);
+        // disable_fire_btn_touch_exlude(level);
+        disable_all_fire_btn_touch(level);
     } else if (status == 3) {
         // 失败
         stop_send_fire_cmd();
