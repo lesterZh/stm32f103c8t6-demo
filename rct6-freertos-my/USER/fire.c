@@ -95,10 +95,14 @@ void init_ctl_cmd(void) {
     ctl_cmd[7] = 0x00;
 }
 
-uint8_t ctl_cmd2[] = {0x5A, 0xA5, 0x0B, 0x82, 0x00, 0xB0, 0x5A, 0xA5, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00};
-// 10
+// 5A A5 0B 82 00 B0 5A A5 00 00 01 05 00 00
+uint8_t ctl_cmd2[] = {0x5A, 0xA5, 0x0B, 0x82, 0x00, 0xB0, 
+                      0x5A, 0xA5, 0x00, 0x00, 0x01, 0x05, 0x00, 0x00};
+
 void disable_btn_touch2(int id) {
     ctl_cmd2[10] = ((id-1) & 0xFF);
+    ctl_cmd2[13] = 0x00;
+
     uart2SendChars(ctl_cmd2, 14);
     sys_delay_ms(50);
 }
@@ -195,6 +199,18 @@ void disable_fire_btn_touch_exlude(u8 level) {
         if (1 || i != id) {
             set_disable_fire_btn_touch_ui(i, 1);
         }
+    }
+}
+
+void disable_all_fire_btn_touch() {
+    // 1级点火对应id=0，5级对应id=4
+    u8 i;
+
+    printf("disable_all_fire_btn_touch \r\n");
+    
+    for (i=1; i<=5; i++) {
+        disable_btn_touch2(i);
+        set_disable_fire_btn_touch_ui(i, 1);
     }
 }
 
