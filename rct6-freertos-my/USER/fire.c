@@ -245,11 +245,13 @@ void set_cmd_wave_ui(int level) {
 
 u8 fire_level;
 idata u8 send_fire_cmd_flag = 0;
-
+void sendString(char *str);
+void sendChar(char ch);
 void send_actual_cmd_to_device(u8 cmd) {
-    // u2_send_byte(cmd);
-    // u2_send_byte(cmd);
-    // u2_send_byte(cmd);
+    sendChar(cmd);
+    sendChar(cmd);
+    sendChar(cmd);
+    // sendString("cmd\r\n");
 }
 
 void send_start_fire_cmd(int level) {

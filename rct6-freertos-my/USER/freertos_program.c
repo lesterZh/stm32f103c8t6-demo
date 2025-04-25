@@ -61,7 +61,7 @@ void keyPressTask(void *arg) {
             pc6KeyDownCnt++;
         } 
 
-        if (pc6KeyDown == 0 && pc6KeyDownCnt > 15) {
+        if (pc6KeyDown == 0 && pc6KeyDownCnt > 25) {
             printf("key down\r\n");
             pc6KeyDown = 1;
         }
@@ -70,7 +70,7 @@ void keyPressTask(void *arg) {
             if (pc6KeyDown) {
                 printf("key up\r\n");
             }
-            pc6KeyDownCnt = 0;
+            pc6KeyDownCnt = -15;
             pc6KeyDown = 0;
         }
     }
