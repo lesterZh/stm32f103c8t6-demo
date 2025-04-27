@@ -31,6 +31,9 @@ void parseDiwenOneWord(u8* buf, int len, u16 *addr, u16 *val) {
             if (addr_ == BTN_ENTER_PRESS_REG) {
                 enter_btn_reg_val = val_;
             }
+            if (addr_ == PAYLOAD_STATE_REG) {
+                payload_btn_reg_val = val_;
+            }
         }
     }
 }

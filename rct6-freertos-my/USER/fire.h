@@ -58,6 +58,7 @@ extern idata u16 cmd_send_cnt;
 extern idata s16 count_down_seconds;
 extern idata s16 btn_type_reg_val;
 extern idata s16 enter_btn_reg_val;
+extern idata s16 payload_btn_reg_val;
 
 void read_reg_val();
 void send_start_fire_cmd_in_loop();

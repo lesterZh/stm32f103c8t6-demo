@@ -4,7 +4,7 @@
 #include "stdio.h"
 
 #define idata volatile
-#define MAX_TASKS 10
+#define MAX_TASKS 50
 
 typedef struct {
     u8 active;

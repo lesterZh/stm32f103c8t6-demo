@@ -27,6 +27,7 @@ idata s16 count_down_seconds;
 
 idata s16 btn_type_reg_val = 0;
 idata s16 enter_btn_reg_val = 0;
+idata s16 payload_btn_reg_val = 0;
 
 // 保证传递进来是u16 s16
 void setDiwenOneWord2(u16 addr, u16 val) {
@@ -427,6 +428,13 @@ void key_process() {
 
     if (isEnterBtnPressed()) {
         resetEnterBtnStatus();
+
+        if (key_code_cur != 6 && payload_btn_reg_val == 0) {
+            key_code_cur = 0;
+            show_warn_info(); 
+            printf("payload is off , forbid\r\n");
+            return;
+        }
 
         if (key_code_cur == 1) {
             FIRE_START_CHECK;
