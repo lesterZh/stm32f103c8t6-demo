@@ -46,7 +46,9 @@ void task_begin(void *arg)
     // vMutexTaskInit();
     // vNotifyTestInit();
 
+#ifndef DEBUG_REPEATER
     fire_task_init();
+#endif 
 
     taskEXIT_CRITICAL();
 }

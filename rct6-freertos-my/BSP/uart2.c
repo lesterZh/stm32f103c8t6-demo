@@ -341,6 +341,7 @@ int isUart2RecFrame(void) {
     return USART2_RX_LEN > 0 && dur >= 3;
 }
 
+void sendChar(char ch);
 void USART2_IRQHandler(void) // 串口2中断服务程序
 {
 	u8 data;
@@ -350,6 +351,9 @@ void USART2_IRQHandler(void) // 串口2中断服务程序
 	{
 		data = USART_ReceiveData(USART2); // 读取接收到的数据
 
+#ifdef DEBUG_REPEATER
+        sendChar(data);
+#endif
         // uart2SendChar(data);
 
         USART2_RX_BUF[USART2_RX_LEN] = data;
