@@ -74,7 +74,7 @@ int main(void)
             tick_1000ms = now;
             led_flip_mini_bsp();
             oled_cnt++;
-            printf("cnt:%d\r\n", oled_cnt);
+            printf("app22 cnt:%d\r\n", oled_cnt);
         }
  
 

@@ -58,7 +58,23 @@ int main(void)
         if (t % 10 == 0)
         {
             LED0 = !LED0;
-            printf("run %d\r\n", t);
+            printf("run check %d\r\n", t / 10);
+
+            if (runFlashIAPApp && uartRecAppEnd && t > 30) {
+                printf("start update app to flash\r\n");
+                if (((*(vu32 *)(0X20001000 + 4)) & 0xFF000000) == 0x08000000) // 判断是否为0X08XXXXXX.
+                {
+                    iap_write_appbin(FLASH_APP1_ADDR, USART_RX_BUF, applenth); // 更新FLASH代码
+                    printf("固件更新完成!\r\n");
+                }
+                else
+                {
+                    printf("非FLASH应用程序!\r\n");
+                }
+                uartRecAppEnd = 0;
+
+            }
+
             if (runFlashIAPApp && t > 30) {
                 printf("go to app\r\n");
                 iap_load_app(FLASH_APP1_ADDR); 
