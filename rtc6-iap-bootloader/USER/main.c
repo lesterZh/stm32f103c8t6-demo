@@ -59,9 +59,9 @@ int main(void)
     // 这里根据flag切换flash和sram程序的引导
     // flash在bootloader启动后3秒内检测串口是否有更新，如果没有则直接跳转到app地址运行，如果有就接收并写入flash
     // 如果是sram，则会一直等串口接收，收到就切换到sram运行。
-    u8 runFlashIAPApp = 0;
+    u8 runFlashIAPApp = 1;
 
-    u8 runSRAMIAPApp = 1;
+    u8 runSRAMIAPApp = 0;
     u8 uartRecAppEnd = 0;
 
 
@@ -77,7 +77,7 @@ int main(void)
     LCD_Init();                                     // 初始化LCD
     KEY_Init();                                     // 按键初始化
 
-    TIM3_Int_Init(9, 7199);//10K, 1ms
+    // TIM3_Int_Init(9, 7199);//10K, 1ms
 
     printf("bootloader start\r\n");
 
