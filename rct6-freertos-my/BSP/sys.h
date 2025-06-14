@@ -17,7 +17,7 @@
 //1,支持ucos
 #define SYSTEM_SUPPORT_OS		0		//定义系统文件夹是否支持UCOS
 
-#define DEBUG_REPEATER
+// #define DEBUG_REPEATER
 																	    
 	 
 //位带操作,实现51类似的GPIO控制功能

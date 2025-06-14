@@ -50,11 +50,11 @@ void _sys_exit(int x)
 // 重定义fputc函数
 int fputc(int ch, FILE *f)
 {
-#ifdef DEBUG_ZHT
+// #ifdef DEBUG_ZHT
 	while ((USART1->SR & 0X40) == 0)
 		; // 循环发送,直到发送完毕
 	USART1->DR = (u8)ch;
-#endif
+// #endif
 	return ch;
 }
 #endif

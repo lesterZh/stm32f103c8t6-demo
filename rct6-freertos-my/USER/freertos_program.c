@@ -47,7 +47,7 @@ void task_begin(void *arg)
     // vNotifyTestInit();
 
 #ifndef DEBUG_REPEATER
-    fire_task_init();
+    // fire_task_init();
 #endif 
 
     taskEXIT_CRITICAL();
@@ -80,11 +80,12 @@ void keyPressTask(void *arg) {
 
 void myTask_1(void *arg)
 {
+    int cnt = 0;
     while (1)
     {
         flip_LED();
         led_flip_mini_bsp();
-        vTaskDelay(300);
+        vTaskDelay(500);
     }
 }
 

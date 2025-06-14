@@ -67,7 +67,8 @@ int main(void)
 
     OLED_Init();  // OLED初始化
 	OLED_Clear(); // 清屏
-
+    printf("start rtos\r\n");
+    
     // 中文 16*16
 	OLED_ShowCHinese(x, 0, 9);
 	OLED_ShowCHinese(x += 20, 0, 10);

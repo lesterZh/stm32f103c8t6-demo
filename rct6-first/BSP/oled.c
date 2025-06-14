@@ -14,6 +14,7 @@ void OLED_WR_Byte(u8 dat, u8 cmd)
         OLED_DC_Set();
     else
         OLED_DC_Clr();
+        
     OLED_CS_Clr();
     for (i = 0; i < 8; i++)
     {
