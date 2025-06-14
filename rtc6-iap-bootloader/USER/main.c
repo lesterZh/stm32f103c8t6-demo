@@ -6,17 +6,62 @@
 #include "lcd.h"
 #include "stmflash.h"
 #include "iap.h"
+#include "stm32f10x.h"
+
 // ALIENTEK MiniSTM32开发板实验32
 // 串口IAP实验
 // FLASH分区: 0X0800 0000~0x0800 8000,给IAP使用,共32K字节,FLASH APP还有256-32=224KB可用.
 //  SRAM分区: 0X2000 1000处开始, 用于存放SRAM IAP代码,共44K字节可用,用户可以自行对44K空间进行ROM和RAM区的分配
 //            特别注意，SRAM APP的ROM占用量不能大于41K字节，因为本例程最大是一次接收41K字节，不能超过这个限制。
+void TIM3_Int_Init(u16 arr, u16 psc)
+{
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStr;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); // ①时钟 TIM3 使能
+
+    // 定时器 TIM3 初始化
+    TIM_TimeBaseInitStr.TIM_Period = arr;                     // 设置自动重装载寄存器周期的值
+    TIM_TimeBaseInitStr.TIM_Prescaler = psc;                  // 设置时钟频率除数的预分频值
+    TIM_TimeBaseInitStr.TIM_ClockDivision = TIM_CKD_DIV1;     // 设置时钟分割
+    TIM_TimeBaseInitStr.TIM_CounterMode = TIM_CounterMode_Up; // TIM 向上计数
+    TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStr);             // ②初始化 TIM3
+    TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);                  // ③允许更新中断
+    // 中断优先级 NVIC 设置
+    NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;           // TIM3 中断
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; // 先占优先级 0 级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        // 从优先级 3 级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // IRQ 通道被使能
+    NVIC_Init(&NVIC_InitStructure);                           // ④初始化 NVIC 寄存器
+    TIM_Cmd(TIM3, ENABLE);                                    // ⑤使能 TIM3
+}
+
+int t3_cnt = 0;
+int sys_tick_1ms = 0;
+
+// 定时器 3 中断服务程序
+// 1ms触发
+void TIM3_IRQHandler(void) // TIM3 中断
+{
+    if (TIM_GetITStatus(TIM3, TIM_IT_Update) == SET) // 检查 TIM3 更新中断发生与否
+    {
+        TIM_ClearITPendingBit(TIM3, TIM_IT_Update); // 清除 TIM3 更新中断标志
+        // printf("t3_cnt:%d\r\n", t3_cnt++);
+        t3_cnt++;
+        sys_tick_1ms++;
+        if (t3_cnt % 2000 == 0) {
+            printf("t3:%d\r\n", t3_cnt);
+        }
+    }
+}
 
 int main(void)
 {
-    u8 runFlashIAPApp = 1;
+    // 这里根据flag切换flash和sram程序的引导
+    // flash在bootloader启动后3秒内检测串口是否有更新，如果没有则直接跳转到app地址运行，如果有就接收并写入flash
+    // 如果是sram，则会一直等串口接收，收到就切换到sram运行。
+    u8 runFlashIAPApp = 0;
 
-    u8 runSRAMIAPApp = 0;
+    u8 runSRAMIAPApp = 1;
     u8 uartRecAppEnd = 0;
 
 
@@ -31,6 +76,9 @@ int main(void)
     LED_Init();                                     // 初始化与LED连接的硬件接口
     LCD_Init();                                     // 初始化LCD
     KEY_Init();                                     // 按键初始化
+
+    TIM3_Int_Init(9, 7199);//10K, 1ms
+
     printf("bootloader start\r\n");
 
     while (1)
@@ -43,7 +91,7 @@ int main(void)
                 oldcount = 0;
                 USART_RX_CNT = 0;
                 printf("用户程序接收完成!\r\n");
-                printf("代码长度:%dBytes\r\n", applenth);
+                printf("代码长度: %d Bytes\r\n", applenth);
                 uartRecAppEnd = 1;
             }
             else
@@ -81,7 +129,7 @@ int main(void)
             }
 
             if (runSRAMIAPApp && uartRecAppEnd && t > 30) {
-                printf("start  go to sram app\r\n");
+                printf("start go to sram app\r\n");
                 if (((*(vu32 *)(0X20001000 + 4)) & 0xFF000000) == 0x20000000) // 判断是否为0X20XXXXXX.
                 {
                     printf("go to sram app\r\n");
